@@ -11,14 +11,28 @@ def findit(line, ip):
     soup = BeautifulSoup(content, 'html.parser')
     table = soup.find('table')
     rowcnt = 0
+    result = []
     for row in table.find_all('tr'):
         row_data = [cell.get_text(strip=True) for cell in row.find_all(['td', 'th'])]
         rowcnt += 1
         if rowcnt >= 4:
-            print(row_data)
+            result.append(row_data)
+    return result
 
-try:
-    targetword = sys.argv[1]
-    findit(targetword,"localhost:7345")
-except IndexError:
-    print("Please enter a search keyword at argument position 1 of this command.")
+def search(query):
+    '''
+    To directly search the query in the local machine.
+    Make sure search server ip is localhost:7345.
+    Args:
+     - query: The query to be searched.
+    '''
+    return findit(query, "localhost:7345")
+
+if __name__ == "__main__":
+    try:
+        res = findit(sys.argv[1], sys.argv[2])
+        for row in res:
+            print(row)
+    except IndexError:
+        print("Usage: python3 everything_api.py <search_query> <everything_server_ip>")
+    print("Notice: Use search() function directly in your code if the server ip is localhost:7345")
