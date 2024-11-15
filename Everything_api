@@ -1,0 +1,24 @@
+import requests
+import os
+import sys
+from bs4 import BeautifulSoup
+
+cwd = os.getcwd()
+
+def findit(line, ip):
+    request = requests.get("http://" + ip + "/?search=" + line)
+    content = request.text
+    soup = BeautifulSoup(content, 'html.parser')
+    table = soup.find('table')
+    rowcnt = 0
+    for row in table.find_all('tr'):
+        row_data = [cell.get_text(strip=True) for cell in row.find_all(['td', 'th'])]
+        rowcnt += 1
+        if rowcnt >= 4:
+            print(row_data)
+
+try:
+    targetword = sys.argv[1]
+    findit(targetword,"localhost:7345")
+except IndexError:
+    print("Please enter a search keyword at argument position 1 of this command.")
